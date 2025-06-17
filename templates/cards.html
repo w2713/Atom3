@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+
+{% block title %}Мои карточки{% endblock %}
+
+{% block extra_css %}
+<style>
+    .card-img-container {
+        height: 200px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-img-container img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Мои карточки</h1>
+    <a href="{{ url_for('new_card') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>Новая карточка
+    </a>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="btn-group view-toggle">
+        <a href="{{ url_for('cards', view='list', sort=request.args.get('sort', 'created_at')) }}"
+           class="btn btn-outline-primary {% if view == 'list' %}active{% endif %}">
+            <i class="fas fa-list me-2"></i>Список
+        </a>
+        <a href="{{ url_for('cards', view='grid', sort=request.args.get('sort', 'created_at')) }}"
+           class="btn btn-outline-primary {% if view == 'grid' %}active{% endif %}">
+            <i class="fas fa-th-large me-2"></i>Сетка
+        </a>
+    </div>
+
+    <div class="btn-group">
+        <a href="{{ url_for('cards', view=view, sort='created_at') }}"
+           class="btn btn-outline-secondary {% if sort_by == 'created_at' %}active{% endif %}">
+            По дате создания
+        </a>
+        <a href="{{ url_for('cards', view=view, sort='updated_at') }}"
+           class="btn btn-outline-secondary {% if sort_by == 'updated_at' %}active{% endif %}">
+            По дате изменения
+        </a>
+    </div>
+</div>
+
+{% if cards %}
+    {% if view == 'grid' %}
+        <div class="cards-grid">
+            {% for card in cards %}
+            <div class="card card-item">
+                <div class="card-body">
+                    <h5 class="card-title">{{ card.title }}</h5>
+
+                    <div class="card-content mb-3">
+                        {% if card.content_type == 'image' %}
+                            <div class="media-container">
+                                <img src="{{ card.content }}" alt="{{ card.title }}" class="img-fluid">
+                            </div>
+                        {% elif card.content_type == 'video' %}
+                            <div class="media-container">
+                                <video controls class="w-100">
+                                    <source src="{{ card.content }}" type="video/mp4">
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                            </div>
+                        {% elif card.content_type == 'audio' %}
+                            <div class="media-container">
+                                <audio controls class="w-100">
+                                    <source src="{{ card.content }}" type="audio/mpeg">
+                                    Ваш браузер не поддерживает аудио.
+                                </audio>
+                            </div>
+                        {% elif card.content_type == 'code' %}
+                            <div class="code-block">
+                                <pre><code class="language-{{ card.content_type }}">{{ card.content }}</code></pre>
+                            </div>
+                        {% elif card.content_type == 'quote' %}
+                            <div class="quote-block">
+                                {{ card.content|safe }}
+                            </div>
+                        {% else %}
+                            <div class="text-content">
+                                {{ card.content|safe }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            {{ card.created_at.strftime('%d.%m.%Y %H:%M') }}
+                        </small>
+
+                        <div class="btn-group">
+                            <a href="{{ url_for('edit_card', card_id=card._id) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('delete_card', card_id=card._id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Удалить эту карточку?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="cards-list">
+            {% for card in cards %}
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <h5 class="card-title">{{ card.title }}</h5>
+
+                        <div class="btn-group">
+                            <a href="{{ url_for('edit_card', card_id=card._id) }}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form method="POST" action="{{ url_for('delete_card', card_id=card._id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Удалить эту карточку?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card-content mb-3">
+                        {% if card.content_type == 'image' %}
+                            <div class="media-container">
+                                <img src="{{ card.content }}" alt="{{ card.title }}" class="img-fluid">
+                            </div>
+                        {% elif card.content_type == 'video' %}
+                            <div class="media-container">
+                                <video controls class="w-100">
+                                    <source src="{{ card.content }}" type="video/mp4">
+                                    Ваш браузер не поддерживает видео.
+                                </video>
+                            </div>
+                        {% elif card.content_type == 'audio' %}
+                            <div class="media-container">
+                                <audio controls class="w-100">
+                                    <source src="{{ card.content }}" type="audio/mpeg">
+                                    Ваш браузер не поддерживает аудио.
+                                </audio>
+                            </div>
+                        {% elif card.content_type == 'code' %}
+                            <div class="code-block">
+                                <pre><code class="language-{{ card.content_type }}">{{ card.content }}</code></pre>
+                            </div>
+                        {% elif card.content_type == 'quote' %}
+                            <div class="quote-block">
+                                {{ card.content|safe }}
+                            </div>
+                        {% else %}
+                            <div class="text-content">
+                                {{ card.content|safe }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <small class="text-muted">
+                            <span>Создано: {{ card.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                            {% if card.updated_at and card.updated_at != card.created_at %}
+                                <br><span>Обновлено: {{ card.updated_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                            {% endif %}
+                        </small>
+
+                        <span class="badge bg-primary">
+                            {% if card.content_type == 'text' %}Текст
+                            {% elif card.content_type == 'code' %}Код
+                            {% elif card.content_type == 'image' %}Изображение
+                            {% elif card.content_type == 'video' %}Видео
+                            {% elif card.content_type == 'audio' %}Аудио
+                            {% elif card.content_type == 'link' %}Ссылка
+                            {% elif card.content_type == 'document' %}Документ
+                            {% elif card.content_type == 'quote' %}Цитата
+                            {% else %}Другое{% endif %}
+                        </span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% else %}
+    <div class="card">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-sticky-note fa-4x text-muted mb-4"></i>
+            <h3>У вас пока нет карточек</h3>
+            <p class="text-muted">Создайте свою первую карточку для хранения информации</p>
+            <a href="{{ url_for('new_card') }}" class="btn btn-primary mt-3">
+                <i class="fas fa-plus me-2"></i>Создать карточку
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

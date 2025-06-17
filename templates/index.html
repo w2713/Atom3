@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="container mt-6">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <h1 class="display-4 fw-bold mb-4">Управляйте своими знаниями с NeuroCards</h1>
+            <p class="lead mb-5">Создавайте, организуйте и находите ваши идеи в удобных карточках с поддержкой любого типа контента.</p>
+
+            <div class="d-flex justify-content-center gap-3 mb-6">
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('cards') }}" class="btn btn-primary btn-lg px-4">
+                    <i class="fas fa-th-large me-2"></i>Мои карточки
+                </a>
+                {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4">
+                    Начать сейчас
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg px-4">
+                    Войти
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-6">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-primary text-white rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-sticky-note fa-2x"></i>
+                    </div>
+                    <h3 class="h5">Универсальные карточки</h3>
+                    <p class="mb-0">Храните текст, код, изображения, видео и другие типы контента в структурированном виде.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-primary text-white rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-mobile-alt fa-2x"></i>
+                    </div>
+                    <h3 class="h5">Адаптивный дизайн</h3>
+                    <p class="mb-0">Полностью адаптировано под все устройства - от смартфонов до настольных компьютеров.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="bg-primary text-white rounded-circle p-3 d-inline-block mb-3">
+                        <i class="fas fa-lock fa-2x"></i>
+                    </div>
+                    <h3 class="h5">Безопасность</h3>
+                    <p class="mb-0">Ваши данные защищены с помощью шифрования паролей и современных технологий безопасности.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
